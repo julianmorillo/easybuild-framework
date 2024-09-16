@@ -502,7 +502,7 @@ def get_cpu_model():
             if res is not None:
                 model = res.group(1)
                 _log.debug("Determined CPU model on Linux using regex '%s' in %s: %s",
-                           model_regex.pattern, PROC_CPUINFO_FP, model)  
+                           model_regex.pattern, PROC_CPUINFO_FP, model)
         else:
             # we need 'model name' on Linux/x86, but 'model' is there first with different info
             # 'model name' is not there for Linux/POWER, but 'model' has the right info
