@@ -115,7 +115,8 @@ MARVELL = 'Marvell'
 MOTOROLA = 'Motorola/Freescale'
 NVIDIA = 'NVIDIA'
 QUALCOMM = 'Qualcomm'
-SIFIVE = 'SiFive'
+SIFIVE_u74mc = 'SiFive U74-MC'
+THEAD = 'T-HEAD'
 
 # Family constants
 POWER_LE = 'POWER little-endian'
@@ -134,7 +135,7 @@ PROC_MEMINFO_FP = '/proc/meminfo'
 
 CPU_ARCHITECTURES = [AARCH32, AARCH64, POWER, RISCV32, RISCV64, X86_64]
 CPU_FAMILIES = [AMD, ARM, INTEL, POWER, POWER_LE, RISCV]
-CPU_VENDORS = [AMD, APM, APPLE, ARM, BROADCOM, CAVIUM, DEC, IBM, INTEL, MARVELL, MOTOROLA, NVIDIA, QUALCOMM, SIFIVE]
+CPU_VENDORS = [AMD, APM, APPLE, ARM, BROADCOM, CAVIUM, DEC, IBM, INTEL, MARVELL, MOTOROLA, NVIDIA, QUALCOMM, SIFIVE_u74mc, THEAD]
 # ARM implementer IDs (i.e., the hexadeximal keys) taken from ARMv8-A Architecture Reference Manual
 # (ARM DDI 0487A.j, Section G6.2.102, Page G6-4493)
 VENDOR_IDS = {
@@ -156,7 +157,9 @@ VENDOR_IDS = {
     '8335-GTH': IBM,
     '8335-GTX': IBM,
     # RISCV
-    'sifive': SIFIVE,
+    'sifive,u74-mc': SIFIVE_u74mc,
+    # Following id comes from Linux (arch/riscv/include/asm/vendorid_list.h)
+    '0x5b7': THEAD,
 }
 # ARM Cortex part numbers from the corresponding ARM Processor Technical Reference Manuals,
 # see http://infocenter.arm.com - Cortex-A series processors, Section "Main ID Register"
@@ -382,7 +385,10 @@ def get_cpu_vendor():
         elif arch in [AARCH32, AARCH64]:
             vendor_regex = re.compile(r"CPU implementer\s+:\s*(\S+)")
         elif arch == RISCV64:
-            vendor_regex = re.compile(r"uarch\s+:\s*(\S+),\s*")
+            if get_cpu_arch_name() == 'u74mc':
+                vendor_regex = re.compile(r"uarch\s+:\s*(\S+)\s*")
+            else:
+                vendor_regex = re.compile(r"mvendorid\s+:\s*(\S+)")
         if vendor_regex and is_readable(PROC_CPUINFO_FP):
             vendor_id = None
 
